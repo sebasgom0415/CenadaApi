@@ -41,7 +41,7 @@ Los datos provienen de los boletines PDF publicados diariamente por el **SIMM/SI
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/cenada-simm.git
+git clone https://github.com/sebasgom0415/CenadaApi
 cd cenada-simm
 
 # 2. Instalar dependencias PHP
