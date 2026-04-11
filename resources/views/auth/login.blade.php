@@ -57,6 +57,9 @@
         </div>
     </div>
     <p class="text-center text-muted small mt-3">
+        ¿No tienes cuenta? <a href="{{ route('registro') }}">Regístrate para acceder a la API</a>
+    </p>
+    <p class="text-center text-muted small mt-1">
         <a href="{{ route('publico.index') }}" class="text-muted">
             <i class="bi bi-arrow-left me-1"></i>Ver portal público
         </a>

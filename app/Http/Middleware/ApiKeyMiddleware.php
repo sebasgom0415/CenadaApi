@@ -33,6 +33,26 @@ class ApiKeyMiddleware
             ], 401);
         }
 
+        if (!$user->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tu cuenta está desactivada. Contacta al administrador.',
+            ], 403);
+        }
+
+        // Registrar la consulta
+        \App\Models\ApiLog::create([
+            'user_id'       => $user->id,
+            'method'        => $request->method(),
+            'endpoint'      => $request->path(),
+            'ip'            => $request->ip(),
+            'user_agent'    => $request->userAgent(),
+            'response_code' => 200,
+        ]);
+
+        // Pasar el usuario autenticado al request
+        $request->merge(['_api_user' => $user]);
+
         return $next($request);
     }
 }

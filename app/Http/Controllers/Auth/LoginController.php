@@ -10,7 +10,9 @@ class LoginController extends Controller
     public function showLogin()
     {
         if (auth()->check()) {
-            return redirect()->route('admin.dashboard');
+            return auth()->user()->isAdmin()
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('mi-cuenta.index');
         }
         return view('auth.login');
     }
@@ -24,7 +26,9 @@ class LoginController extends Controller
 
         if (auth()->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->route('admin.dashboard');
+            return auth()->user()->isAdmin()
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('mi-cuenta.index');
         }
 
         return back()->withErrors(['email' => 'Credenciales incorrectas.'])->onlyInput('email');

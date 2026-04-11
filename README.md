@@ -12,6 +12,8 @@ Los datos provienen de los boletines PDF publicados diariamente por el **SIMM/SI
 - **Dashboard público** — tablas, gráficos de evolución y top 10 de precios, accesible sin login
 - **Panel de administración** — gestión de boletines, catálogo de productos e historial de precios
 - **API REST con autenticación por token** — consume los datos desde cualquier aplicación externa
+- **Registro de usuarios API** — los usuarios se registran desde el portal público, obtienen su token y pueden consultarlo desde su cuenta
+- **Historial de consultas** — el admin visualiza qué usuarios están usando la API, qué endpoints consumen y con qué frecuencia
 - Sin dependencias de CDN — Bootstrap 5, jQuery, Chart.js y SweetAlert2 están incluidos localmente
 
 ---
@@ -24,7 +26,7 @@ Los datos provienen de los boletines PDF publicados diariamente por el **SIMM/SI
 | Base de datos | MySQL |
 | PDF Parser | `smalot/pdfparser` |
 | Frontend | Bootstrap 5, jQuery 3.7, Chart.js 4.4, SweetAlert2 11 |
-| Auth | Sesión nativa de Laravel + API token |
+| Auth | Sesión nativa de Laravel + API token (SHA-256) |
 
 ---
 
@@ -117,6 +119,25 @@ precios
 ├── precio_maximo
 ├── moda
 └── promedio
+
+users
+├── id
+├── name
+├── email
+├── password
+├── role                     (admin | api)
+├── api_token                (SHA-256 del token plano)
+└── is_active                (boolean)
+
+api_logs
+├── id
+├── user_id
+├── method                   (GET, POST…)
+├── endpoint
+├── ip
+├── user_agent
+├── response_code
+└── created_at
 ```
 
 ---
@@ -135,6 +156,7 @@ http://localhost/cenada/public/
 - Filtros por unidad de medida y búsqueda de producto
 - Tab **Tabla** — precios min/max/moda/promedio
 - Tab **Gráficos** — evolución histórica, distribución por unidad, top 10 más caros
+- Botón **Acceso API** para que los visitantes se registren y obtengan su token
 
 ### Panel de administración
 
@@ -146,7 +168,9 @@ http://localhost/cenada/public/login
 - Importar PDFs (uno o varios a la vez con drag & drop)
 - Ver y eliminar boletines
 - Catálogo de productos con historial de precios
-- Gestión de API tokens
+- Gestión de tu propio API Token de admin
+- **Usuarios API** — lista de cuentas registradas, activar/desactivar, ver detalle
+- **Logs de consultas** — historial completo de llamadas a la API con estadísticas por usuario y endpoint
 
 ### Importar un boletín PDF
 
@@ -156,13 +180,20 @@ http://localhost/cenada/public/login
    Formato esperado: `SIMM-Boletin de Precios PIMA-Plaza YYYY-MM-DD.pdf`
 4. El sistema extrae automáticamente fecha, productos y precios
 
+### Registro de usuario API
+
+1. Ir al portal público y hacer clic en **Acceso API**
+2. Completar nombre, correo y contraseña
+3. Al registrarse se genera automáticamente un token — se muestra **una sola vez**
+4. El usuario puede ingresar a `/mi-cuenta` para regenerar el token o consultar su historial de uso
+
 ---
 
 ## API REST
 
 **Base URL:** `http://localhost/cenada/public/api`
 
-Todas las rutas requieren autenticación. Genera un token desde el panel admin en la sección **API Token**.
+Todas las rutas requieren autenticación. Obtén tu token registrándote en `/registro` o desde el panel admin en **API Token**.
 
 ### Autenticación
 
@@ -247,13 +278,6 @@ GET /api/boletines?api_token={tu_token}
       "precio_maximo": 30000.00,
       "moda": 29000.00,
       "promedio": 29200.00
-    },
-    {
-      "fecha_plaza": "2026-04-10",
-      "precio_minimo": 31000.00,
-      "precio_maximo": 32000.00,
-      "moda": 31000.00,
-      "promedio": 31444.44
     }
   ]
 }
@@ -267,6 +291,14 @@ GET /api/boletines?api_token={tu_token}
 }
 ```
 
+**Error — cuenta inactiva (403)**
+```json
+{
+  "success": false,
+  "message": "Tu cuenta está desactivada. Contacta al administrador."
+}
+```
+
 **Error — fecha no encontrada (404)**
 ```json
 {
@@ -277,7 +309,7 @@ GET /api/boletines?api_token={tu_token}
 
 ---
 
-## Generar API token por consola
+## Generar API token por consola (admin)
 
 ```bash
 php artisan simm:api-token

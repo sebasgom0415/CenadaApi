@@ -22,8 +22,20 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'api_token',
+        'is_active',
     ];
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function apiLogs()
+    {
+        return $this->hasMany(ApiLog::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

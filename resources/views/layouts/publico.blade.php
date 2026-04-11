@@ -22,10 +22,13 @@
             </div>
         </div>
         <div class="ms-auto d-flex align-items-center gap-2">
-            <span class="pub-date-badge">
+            <span class="pub-date-badge d-none d-sm-inline-flex">
                 <i class="bi bi-calendar3 me-1"></i>
                 {{ \Carbon\Carbon::now()->locale('es')->isoFormat('D MMM YYYY') }}
             </span>
+            <a href="{{ route('registro') }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-key me-1"></i>Acceso API
+            </a>
             <a href="{{ route('login') }}" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-lock me-1"></i>Admin
             </a>

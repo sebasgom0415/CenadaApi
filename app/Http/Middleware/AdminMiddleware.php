@@ -19,6 +19,10 @@ class AdminMiddleware
             return redirect()->route('login')->with('error', 'Debes iniciar sesión para acceder al panel de administración.');
         }
 
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'No tienes permisos para acceder al panel de administración.');
+        }
+
         return $next($request);
     }
 }

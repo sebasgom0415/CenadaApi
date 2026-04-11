@@ -15,8 +15,10 @@ class AdminUserSeeder extends Seeder
         \App\Models\User::updateOrCreate(
             ['email' => 'admin@cenada.cr'],
             [
-                'name'     => 'Administrador',
-                'password' => \Illuminate\Support\Facades\Hash::make('cenada2026'),
+                'name'      => 'Administrador',
+                'role'      => 'admin',
+                'is_active' => true,
+                'password'  => \Illuminate\Support\Facades\Hash::make('cenada2026'),
             ]
         );
     }

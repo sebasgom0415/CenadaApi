@@ -301,6 +301,8 @@ body {
 .stat-icon.blue   { background: #eef0fe; color: var(--accent); }
 .stat-icon.green  { background: #f0fff4; color: var(--success); }
 .stat-icon.orange { background: #fffaf0; color: #dd6b20; }
+.stat-icon.red    { background: #fff5f5; color: #e53e3e; }
+.stat-icon.purple { background: #faf5ff; color: #805ad5; }
 .stat-icon.gray   { background: #f7fafc; color: #4a5568; }
 
 .stat-info {}

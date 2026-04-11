@@ -46,9 +46,21 @@
             <div class="sidebar-section-label">API</div>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a href="{{ route('admin.api.token') }}" class="nav-link {{ request()->routeIs('admin.api.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.api.token') }}" class="nav-link {{ request()->routeIs('admin.api.token*') ? 'active' : '' }}">
                         <i class="bi bi-key"></i>
-                        <span>API Token</span>
+                        <span>Mi API Token</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.api-usuarios.index') }}" class="nav-link {{ request()->routeIs('admin.api-usuarios.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i>
+                        <span>Usuarios API</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.api-logs.index') }}" class="nav-link {{ request()->routeIs('admin.api-logs.*') ? 'active' : '' }}">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Logs de consultas</span>
                     </a>
                 </li>
             </ul>
@@ -70,12 +82,12 @@
             </ul>
         </div>
 
-        <div class="sidebar-footer d-flex align-items-center justify-content-between">
-            <span class="text-muted small">SIFPIMA &copy; {{ date('Y') }}</span>
+        <div class="sidebar-footer">
+            <div class="small text-muted mb-2">{{ auth()->user()->name }}</div>
             <form method="POST" action="{{ route('logout') }}" class="mb-0">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-link text-muted p-0" title="Cerrar sesión">
-                    <i class="bi bi-box-arrow-right"></i>
+                <button type="submit" class="btn btn-sm btn-outline-light w-100">
+                    <i class="bi bi-box-arrow-right me-1"></i><span>Cerrar sesión</span>
                 </button>
             </form>
         </div>
