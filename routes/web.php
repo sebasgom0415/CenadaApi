@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 // ── Pública ──────────────────────────────────────────────────────────────────
 Route::get('/', [PublicoController::class, 'index'])->name('publico.index');
 Route::get('/chart', [PublicoController::class, 'chart'])->name('publico.chart');
+Route::get('/productos', [PublicoController::class, 'productos'])->name('publico.productos');
+Route::get('/productos/{producto}', [PublicoController::class, 'productoShow'])->name('publico.productos.show');
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
@@ -39,6 +41,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/boletines', [BoletinController::class, 'index'])->name('boletines.index');
     Route::get('/boletines/create', [BoletinController::class, 'create'])->name('boletines.create');
     Route::post('/boletines', [BoletinController::class, 'store'])->name('boletines.store');
+    Route::post('/boletines/fetch-email', [BoletinController::class, 'fetchFromEmail'])->name('boletines.fetch-email');
     Route::get('/boletines/{boletin}', [BoletinController::class, 'show'])->name('boletines.show');
     Route::delete('/boletines/{boletin}', [BoletinController::class, 'destroy'])->name('boletines.destroy');
 

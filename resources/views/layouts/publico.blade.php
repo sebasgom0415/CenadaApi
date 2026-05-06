@@ -26,6 +26,14 @@
                 <i class="bi bi-calendar3 me-1"></i>
                 {{ \Carbon\Carbon::now()->locale('es')->isoFormat('D MMM YYYY') }}
             </span>
+            <a href="{{ route('publico.index') }}"
+               class="btn btn-sm d-none d-md-inline-flex {{ request()->routeIs('publico.index') ? 'btn-primary' : 'btn-outline-secondary' }}">
+                <i class="bi bi-table me-1"></i>Precios
+            </a>
+            <a href="{{ route('publico.productos') }}"
+               class="btn btn-sm d-none d-md-inline-flex {{ request()->routeIs('publico.productos*') ? 'btn-primary' : 'btn-outline-secondary' }}">
+                <i class="bi bi-box-seam me-1"></i>Productos
+            </a>
             <a href="{{ route('registro') }}" class="btn btn-sm btn-primary">
                 <i class="bi bi-key me-1"></i>Acceso API
             </a>

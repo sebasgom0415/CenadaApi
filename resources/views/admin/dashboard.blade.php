@@ -48,7 +48,7 @@
 
 <!-- Accesos rápidos -->
 <div class="row g-3 mb-4">
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-sm-6 col-md-3">
         <a href="{{ route('admin.boletines.create') }}" class="text-decoration-none">
             <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #4f6ef7 !important;">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
@@ -62,7 +62,24 @@
             </div>
         </a>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-sm-6 col-md-3">
+        <form method="POST" action="{{ route('admin.boletines.fetch-email') }}" id="form-fetch-dash" class="h-100">
+            @csrf
+            <button type="submit" class="w-100 h-100 text-start text-decoration-none btn btn-link p-0" id="btn-fetch-dash">
+                <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #805ad5 !important;">
+                    <div class="card-body d-flex align-items-center gap-3 py-3">
+                        <div class="stat-icon flex-shrink-0" style="background:#ede9fe;color:#805ad5;"><i class="bi bi-envelope-arrow-down"></i></div>
+                        <div class="text-start">
+                            <div class="fw-semibold text-dark">Importar desde correo</div>
+                            <div class="text-muted small">Buscar PDF en bandeja</div>
+                        </div>
+                        <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                    </div>
+                </div>
+            </button>
+        </form>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3">
         <a href="{{ route('admin.boletines.index') }}" class="text-decoration-none">
             <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #38a169 !important;">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
@@ -76,7 +93,7 @@
             </div>
         </a>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-sm-6 col-md-3">
         <a href="{{ route('publico.index') }}" target="_blank" class="text-decoration-none">
             <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #d69e2e !important;">
                 <div class="card-body d-flex align-items-center gap-3 py-3">
@@ -91,6 +108,17 @@
         </a>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.getElementById('form-fetch-dash').addEventListener('submit', function () {
+    const btn = document.getElementById('btn-fetch-dash');
+    btn.disabled = true;
+    btn.querySelector('.fw-semibold').textContent = 'Buscando…';
+    btn.querySelector('.text-muted.small').innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+});
+</script>
+@endpush
 
 <!-- Últimos boletines -->
 <div class="card">

@@ -10,10 +10,28 @@
         <h1 class="page-header-title">Boletines de Precios</h1>
         <p class="page-header-sub">Historial de boletines importados</p>
     </div>
-    <a href="{{ route('admin.boletines.create') }}" class="btn btn-primary">
-        <i class="bi bi-upload me-1"></i> Importar PDF
-    </a>
+    <div class="d-flex gap-2">
+        <form method="POST" action="{{ route('admin.boletines.fetch-email') }}" id="form-fetch-email">
+            @csrf
+            <button type="submit" class="btn btn-outline-primary" id="btn-fetch-email">
+                <i class="bi bi-envelope-arrow-down me-1"></i> Importar desde correo
+            </button>
+        </form>
+        <a href="{{ route('admin.boletines.create') }}" class="btn btn-primary">
+            <i class="bi bi-upload me-1"></i> Importar PDF
+        </a>
+    </div>
 </div>
+
+@push('scripts')
+<script>
+document.getElementById('form-fetch-email').addEventListener('submit', function () {
+    const btn = document.getElementById('btn-fetch-email');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Buscando…';
+});
+</script>
+@endpush
 
 <div class="card">
     <div class="card-body p-0">
