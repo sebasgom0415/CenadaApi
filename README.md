@@ -1,5 +1,7 @@
 # SIMM CENADA — Sistema de Precios Mayoristas
 
+**Live:** [https://sgomez.space](https://sgomez.space)
+
 Dashboard y API REST para la consulta de precios mayoristas del **CENADA** (Centro Nacional de Abastecimiento y Distribución de Alimentos), Heredia, Costa Rica.
 
 Los datos provienen de los boletines PDF publicados diariamente por el **SIMM/SIFPIMA** (Sistema de Información de Mercados Mayoristas — PIMA).
@@ -149,7 +151,7 @@ api_logs
 Accesible sin login:
 
 ```
-http://localhost/cenada/public/
+https://sgomez.space/
 ```
 
 - Selector de fecha de boletín
@@ -161,8 +163,8 @@ http://localhost/cenada/public/
 ### Panel de administración
 
 ```
-http://localhost/cenada/public/admin
-http://localhost/cenada/public/login
+https://sgomez.space/admin
+https://sgomez.space/login
 ```
 
 - Importar PDFs (uno o varios a la vez con drag & drop)
@@ -191,9 +193,9 @@ http://localhost/cenada/public/login
 
 ## API REST
 
-**Base URL:** `http://localhost/cenada/public/api`
+**Base URL:** `https://sgomez.space/api`
 
-Todas las rutas requieren autenticación. Obtén tu token registrándote en `/registro` o desde el panel admin en **API Token**.
+Todas las rutas requieren autenticación. Obtén tu token registrándote en `https://sgomez.space/registro` o desde el panel admin en **API Token**.
 
 ### Autenticación
 
@@ -202,7 +204,7 @@ Todas las rutas requieren autenticación. Obtén tu token registrándote en `/re
 Authorization: Bearer {tu_token}
 
 # Opción 2 — Query string
-GET /api/boletines?api_token={tu_token}
+GET https://sgomez.space/api/boletines?api_token={tu_token}
 ```
 
 ### Endpoints

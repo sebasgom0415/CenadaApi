@@ -4,6 +4,10 @@
 
 @section('content')
 
+
+
+
+
 <!-- Hero -->
 <div class="pub-hero mb-4">
     <div class="row align-items-center">
@@ -63,12 +67,15 @@
 </div>
 
 <!-- Filtros -->
-<div class="filter-bar">
+<!-- Filtros simples para celular -->
+<div class="filter-bar farmer-filter">
     <form method="GET" action="{{ route('publico.index') }}" id="formFiltros">
-        <div class="row g-2 align-items-end">
-            <div class="col-12 col-sm-6 col-md-3">
-                <label class="form-label fw-semibold" style="font-size:0.78rem;color:#718096;">FECHA DE PLAZA</label>
-                <select name="boletin_id" class="form-select form-select-sm" onchange="document.getElementById('formFiltros').submit()">
+        <div class="row g-3">
+
+            <div class="col-12">
+                <label class="farmer-label">Fecha de precios</label>
+                <select name="boletin_id" class="form-select farmer-input"
+                        onchange="document.getElementById('formFiltros').submit()">
                     @foreach($fechasDisponibles as $id => $fecha)
                         <option value="{{ $id }}" {{ $boletinActivo?->id == $id ? 'selected' : '' }}>
                             {{ \Carbon\Carbon::parse($fecha)->format('d/m/Y') }}
@@ -76,81 +83,148 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-12 col-sm-6 col-md-3">
-                <label class="form-label fw-semibold" style="font-size:0.78rem;color:#718096;">UNIDAD</label>
-                <select name="unidad" class="form-select form-select-sm" onchange="document.getElementById('formFiltros').submit()">
-                    <option value="">Todas las unidades</option>
-                    @foreach($unidades as $u)
-                        <option value="{{ $u }}" {{ request('unidad') == $u ? 'selected' : '' }}>{{ $u }}</option>
-                    @endforeach
-                </select>
+
+            <div class="col-12">
+                <label class="farmer-label">Buscar producto</label>
+                <input type="text"
+                       name="buscar"
+                       value="{{ request('buscar') }}"
+                       class="form-control farmer-input"
+                       placeholder="Ejemplo: tomate, papa, cebolla">
             </div>
-            <div class="col-12 col-md-4">
-                <label class="form-label fw-semibold" style="font-size:0.78rem;color:#718096;">BUSCAR PRODUCTO</label>
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" name="buscar" value="{{ request('buscar') }}" class="form-control border-start-0" placeholder="Ej: Tomate, Papa...">
-                    <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
-                </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary farmer-btn w-100">
+                    <i class="bi bi-search me-1"></i> Buscar
+                </button>
             </div>
-            <div class="col-12 col-md-2 d-flex align-items-end">
-                @if(request('buscar') || request('unidad'))
-                    <a href="{{ route('publico.index', ['boletin_id' => $boletinActivo?->id]) }}" class="btn btn-sm btn-outline-secondary w-100">
-                        <i class="bi bi-x me-1"></i>Limpiar
+
+            @if(request('buscar') || request('unidad'))
+                <div class="col-12">
+                    <a href="{{ route('publico.index', ['boletin_id' => $boletinActivo?->id]) }}"
+                       class="btn btn-outline-secondary farmer-btn w-100">
+                        Limpiar búsqueda
                     </a>
-                @endif
-            </div>
+                </div>
+            @endif
+
         </div>
     </form>
 </div>
 
-<!-- Tabs: Tabla / Gráficos -->
+{{-- Acceso rápido al historial en celular --}}
+<div class="d-md-none mb-3">
+    <button class="btn btn-historial w-100" onclick="activarTab('historial')">
+        <i class="bi bi-clock-history me-2"></i>
+        Ver Historial de Boletines
+        <span class="hist-count-badge">{{ $totalBoletines }}</span>
+    </button>
+</div>
+
+<!-- Tabs: Tabla / Gráficos / Historial -->
 <div class="pub-tabs">
-    <button class="pub-tab active" data-tab="tabla"><i class="bi bi-table me-1"></i>Tabla de precios</button>
+    <button class="pub-tab active" data-tab="tabla"><i class="bi bi-table me-1"></i>Precios</button>
     <button class="pub-tab" data-tab="graficos"><i class="bi bi-graph-up me-1"></i>Gráficos</button>
+    <button class="pub-tab" data-tab="historial">
+        <i class="bi bi-clock-history me-1"></i>Historial
+        <span class="pub-tab-badge">{{ $totalBoletines }}</span>
+    </button>
 </div>
 
 <!-- Tab: Tabla -->
 <div class="pub-tab-pane active" id="tab-tabla">
-    <div class="pub-card">
-        <div class="pub-card-header">
-            <span>Precios — {{ $boletinActivo?->fecha_plaza->format('d/m/Y') }}</span>
-            <span style="font-size:0.78rem;color:#718096;" id="contadorResultados">{{ $precios->count() }} productos</span>
+
+    {{-- Tarjetas en celular --}}
+    <div class="d-md-none">
+        <div class="d-flex flex-column gap-2">
+        @forelse($precios as $precio)
+        @php
+            $nombre   = $precio->producto->nombre;
+            $n        = mb_strtolower(str_replace(['á','é','í','ó','ú','ñ'],['a','e','i','o','u','n'], $nombre));
+            $emojiMap = [
+                'tomate'=>'🍅','papa'=>'🥔','cebolla'=>'🧅','zanahoria'=>'🥕',
+                'lechuga'=>'🥬','chile'=>'🌶️','platano'=>'🍌','banano'=>'🍌',
+                'mango'=>'🥭','pina'=>'🍍','aguacate'=>'🥑','naranja'=>'🍊',
+                'limon'=>'🍋','manzana'=>'🍎','maiz'=>'🌽','elote'=>'🌽',
+                'brocoli'=>'🥦','pepino'=>'🥒','yuca'=>'🍠','camote'=>'🍠',
+                'repollo'=>'🥬','chayote'=>'🫛','mora'=>'🫐','ajo'=>'🧄',
+                'guayaba'=>'🍐','sandia'=>'🍉','fresa'=>'🍓','melon'=>'🍈',
+                'espinaca'=>'🥬','coliflor'=>'🥦','loroco'=>'🌸','apio'=>'🌿',
+                'remolacha'=>'🫀','rabano'=>'🌶️','jengibre'=>'🫚',
+            ];
+            $icono = '🌱';
+            foreach ($emojiMap as $k => $e) {
+                if (str_contains($n, $k)) { $icono = $e; break; }
+            }
+            $paleta      = ['blue','green','orange','teal','indigo','rose','violet'];
+            $avatarColor = $paleta[abs(crc32($nombre)) % count($paleta)];
+        @endphp
+        <div class="d-flex align-items-start gap-3 p-3 bg-white border rounded-3 shadow-sm">
+            <div class="mprod-avatar mprod-avatar--{{ $avatarColor }}">{{ $icono }}</div>
+            <div class="flex-grow-1" style="min-width:0">
+                <div class="fw-bold lh-sm mb-1">{{ $nombre }}</div>
+                <div class="text-muted small mb-2">{{ $precio->producto->unidad_comercializacion }}</div>
+                <div class="d-flex flex-wrap gap-2">
+                    <div class="mprod-price-item">
+                        <span class="mprod-price-label">Mín</span>
+                        <span class="mprod-price-val mprod-min">₡{{ number_format($precio->precio_minimo, 0) }}</span>
+                    </div>
+                    <div class="mprod-price-item">
+                        <span class="mprod-price-label">Máx</span>
+                        <span class="mprod-price-val mprod-max">₡{{ number_format($precio->precio_maximo, 0) }}</span>
+                    </div>
+                    <div class="mprod-price-item mprod-price-item--prom">
+                        <span class="mprod-price-label">Promedio</span>
+                        <span class="mprod-price-val mprod-prom">₡{{ number_format($precio->promedio, 0) }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="table-responsive">
-            <table class="pub-table" id="tablaPublica">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Unidad</th>
-                        <th class="text-end">Mínimo</th>
-                        <th class="text-end">Máximo</th>
-                        <th class="text-end">Moda</th>
-                        <th class="text-end">Promedio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($precios as $precio)
-                    <tr>
-                        <td class="fw-semibold">{{ $precio->producto->nombre }}</td>
-                        <td><span class="pub-badge">{{ $precio->producto->unidad_comercializacion }}</span></td>
-                        <td class="text-end">₡{{ number_format($precio->precio_minimo, 2) }}</td>
-                        <td class="text-end">₡{{ number_format($precio->precio_maximo, 2) }}</td>
-                        <td class="text-end">₡{{ number_format($precio->moda, 2) }}</td>
-                        <td class="text-end fw-semibold" style="color:#4f6ef7;">₡{{ number_format($precio->promedio, 2) }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center py-5" style="color:#718096;">
-                            <i class="bi bi-search d-block mb-2" style="font-size:2rem;"></i>
-                            Sin resultados para los filtros aplicados
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        @empty
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-search d-block mb-2" style="font-size:2rem;"></i>
+            Sin resultados para los filtros aplicados
+        </div>
+        @endforelse
         </div>
     </div>
+
+    {{-- Tabla en escritorio --}}
+    <div class="d-none d-md-block table-responsive">
+        <table class="pub-table" id="tablaPublica">
+            <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Unidad</th>
+                <th class="text-end">Mínimo</th>
+                <th class="text-end">Máximo</th>
+                <th class="text-end">Moda</th>
+                <th class="text-end">Promedio</th>
+            </tr>
+            </thead>
+            <tbody>
+            @forelse($precios as $precio)
+                <tr>
+                    <td class="fw-semibold">{{ $precio->producto->nombre }}</td>
+                    <td><span class="pub-badge">{{ $precio->producto->unidad_comercializacion }}</span></td>
+                    <td class="text-end">₡{{ number_format($precio->precio_minimo, 2) }}</td>
+                    <td class="text-end">₡{{ number_format($precio->precio_maximo, 2) }}</td>
+                    <td class="text-end">₡{{ number_format($precio->moda, 2) }}</td>
+                    <td class="text-end fw-semibold" style="color:#4f6ef7;">
+                        ₡{{ number_format($precio->promedio, 2) }}
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        Sin resultados para los filtros aplicados
+                    </td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 <!-- Tab: Gráficos -->
@@ -200,6 +274,56 @@
     </div>
 </div>
 
+<!-- Tab: Historial -->
+<div class="pub-tab-pane" id="tab-historial">
+    <div class="row g-3">
+        @foreach($boletinesHistorial as $b)
+        @php
+            $mes = $b->fecha_plaza->month;
+            $gradientes = [
+                1  => 'hist-grad-blue',
+                2  => 'hist-grad-indigo',
+                3  => 'hist-grad-green',
+                4  => 'hist-grad-teal',
+                5  => 'hist-grad-green',
+                6  => 'hist-grad-orange',
+                7  => 'hist-grad-orange',
+                8  => 'hist-grad-red',
+                9  => 'hist-grad-teal',
+                10 => 'hist-grad-indigo',
+                11 => 'hist-grad-orange',
+                12 => 'hist-grad-blue',
+            ];
+            $gradClass = $gradientes[$mes] ?? 'hist-grad-blue';
+            $activo = $boletinActivo?->id === $b->id;
+        @endphp
+        <div class="col-6 col-sm-4 col-lg-3">
+            <a href="{{ route('publico.index', ['boletin_id' => $b->id]) }}"
+               class="hist-card h-100 {{ $activo ? 'hist-card-active' : '' }}">
+                <div class="hist-card-top {{ $gradClass }}">
+                    @if($activo)
+                        <span class="hist-badge-activo"><i class="bi bi-check-circle-fill me-1"></i>Activo</span>
+                    @endif
+                    <div class="hist-icon-wrap">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                    </div>
+                    <div class="hist-mes">{{ $b->fecha_plaza->locale('es')->isoFormat('MMMM') }}</div>
+                </div>
+                <div class="hist-card-body">
+                    <div class="hist-fecha">{{ $b->fecha_plaza->format('d/m/Y') }}</div>
+                    <div class="hist-plaza">{{ $b->plaza->nombre ?? 'CENADA' }}</div>
+                    <div class="hist-meta">
+                        <span><i class="bi bi-box-seam me-1"></i>{{ $b->precios_count }} productos</span>
+                        <span><i class="bi bi-currency-dollar me-1"></i>₡{{ number_format($b->tipo_cambio_usd, 0) }}</span>
+                    </div>
+                    <div class="hist-ver">Ver precios <i class="bi bi-arrow-right-short"></i></div>
+                </div>
+            </a>
+        </div>
+        @endforeach
+    </div>
+</div>
+
 @endif
 
 @endsection
@@ -208,11 +332,15 @@
 @if($totalBoletines > 0)
 <script>
 // ── Tabs ────────────────────────────────────────────────────
-$('.pub-tab').on('click', function () {
+function activarTab(nombre) {
     $('.pub-tab').removeClass('active');
     $('.pub-tab-pane').removeClass('active');
-    $(this).addClass('active');
-    $('#tab-' + $(this).data('tab')).addClass('active');
+    $('.pub-tab[data-tab="' + nombre + '"]').addClass('active');
+    $('#tab-' + nombre).addClass('active');
+    document.querySelector('.pub-tabs').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+$('.pub-tab').on('click', function () {
+    activarTab($(this).data('tab'));
 });
 
 // ── Chart evolución ─────────────────────────────────────────

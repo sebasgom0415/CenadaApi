@@ -65,10 +65,16 @@ class PublicoController extends Controller
             ];
         }
 
+        $boletinesHistorial = \App\Models\Boletin::with('plaza')
+            ->withCount('precios')
+            ->orderByDesc('fecha_plaza')
+            ->get();
+
         return view('publico.index', compact(
             'fechasDisponibles', 'totalBoletines', 'totalProductos',
             'boletinActivo', 'precios', 'unidades',
-            'productosLista', 'chartData', 'unidadesChart'
+            'productosLista', 'chartData', 'unidadesChart',
+            'boletinesHistorial'
         ));
     }
 
