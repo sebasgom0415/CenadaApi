@@ -1,7 +1,5 @@
 # SIMM CENADA — Sistema de Precios Mayoristas
 
-**Live:** [https://sgomez.space](https://sgomez.space)
-
 Dashboard y API REST para la consulta de precios mayoristas del **CENADA** (Centro Nacional de Abastecimiento y Distribución de Alimentos), Heredia, Costa Rica.
 
 Los datos provienen de los boletines PDF publicados diariamente por el **SIMM/SIFPIMA** (Sistema de Información de Mercados Mayoristas — PIMA).
@@ -82,14 +80,9 @@ php artisan db:seed --class=AdminUserSeeder
 php artisan storage:link
 ```
 
-### Credenciales por defecto del admin
+### Usuario administrador
 
-```
-Email:      admin@cenada.cr
-Contraseña: cenada2026
-```
-
-> Cámbialas desde la base de datos después del primer ingreso.
+El seeder `AdminUserSeeder` crea el usuario administrador inicial. Cambia su contraseña inmediatamente después del primer ingreso y nunca uses credenciales por defecto en producción.
 
 ---
 
@@ -151,7 +144,7 @@ api_logs
 Accesible sin login:
 
 ```
-https://sgomez.space/
+http://localhost/cenada/public/
 ```
 
 - Selector de fecha de boletín
@@ -163,8 +156,8 @@ https://sgomez.space/
 ### Panel de administración
 
 ```
-https://sgomez.space/admin
-https://sgomez.space/login
+http://localhost/cenada/public/admin
+http://localhost/cenada/public/login
 ```
 
 - Importar PDFs (uno o varios a la vez con drag & drop)
@@ -193,9 +186,9 @@ https://sgomez.space/login
 
 ## API REST
 
-**Base URL:** `https://sgomez.space/api`
+**Base URL:** `http://localhost/cenada/public/api`
 
-Todas las rutas requieren autenticación. Obtén tu token registrándote en `https://sgomez.space/registro` o desde el panel admin en **API Token**.
+Todas las rutas requieren autenticación. Obtén tu token registrándote en `/registro` o desde el panel admin en **API Token**.
 
 ### Autenticación
 
@@ -204,7 +197,7 @@ Todas las rutas requieren autenticación. Obtén tu token registrándote en `htt
 Authorization: Bearer {tu_token}
 
 # Opción 2 — Query string
-GET https://sgomez.space/api/boletines?api_token={tu_token}
+GET /api/boletines?api_token={tu_token}
 ```
 
 ### Endpoints
